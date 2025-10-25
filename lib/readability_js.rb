@@ -28,6 +28,7 @@ module ReadabilityJs
     "a-video",
     "a-gift",
     "a-collapse",
+    "a-opt-in",
     # spiegel
     "[data-area='related_articles']",
     # welt
