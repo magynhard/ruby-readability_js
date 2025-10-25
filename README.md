@@ -3,7 +3,7 @@
 ![Gem](https://img.shields.io/gem/dt/readability_js?color=blue&style=plastic)
 [![License: MIT](https://img.shields.io/badge/License-MIT-gold.svg?style=plastic&logo=mit)](LICENSE)
 
-> Ruby wrapper gem for [readability](https://github.com/mozilla/readability) from Mozilla.
+> Clean up web pages and extract the main content from ruby, powered by Mozilla Readability.
 
 This is a Ruby wrapper gem for [readability](https://github.com/mozilla/readability), by running a node process with [nodo](https://github.com/mtgrosser/nodo).
 
