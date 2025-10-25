@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email = ["readability_js.gemspec@mail.magynhard.de"]
   spec.license = "MIT"
 
-  spec.summary = %q{Ruby wrapper gem for mozilla readability to extract main content from web pages}
+  spec.summary = %q{Clean up web pages and extract the main content, powered by Mozilla Readability}
   spec.description = %q{ReadabilityJs is a Ruby wrapper gem for the mozilla readability library to extract the main content from web pages. It uses the Nodo gem to run the JavaScript Readability library in a Node.js environment, allowing for efficient and accurate content extraction within Ruby applications.}
   spec.homepage = "https://github.com/magynhard/ruby-readability_js"
 
