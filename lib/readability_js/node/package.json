@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "example": "node readability-example.js"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "jsdom": "^27.0.1"
+  }
+}
