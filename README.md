@@ -88,14 +88,16 @@ It contains the data returned by readability, with hash keys transformed in snak
 ```ruby
 {
   "title" => "Article Title",
-  "byline" => "Author Name",
-  "dir" => "ltr",
   "content" => "<div>...</div>",
   "text_content" => "Plain text content",
   "markdown_content" => "## Markdown content", # only for extended parse
   "length" => 1234,
   "excerpt" => "This is an excerpt of the article...",
+  "byline" => "Author Name",
+  "dir" => "ltr",
   "site_name" => "example.com",
+  "lang" => "en",
+  "published_time" => "2024-01-01T12:00:00Z"
 }    
 ```
 
