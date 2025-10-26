@@ -134,8 +134,8 @@ module ReadabilityJs
   #
   # ReadabilityJs.probably_readerable?(html, min_content_length: 200, min_score: 25, visibility_checker: visibility_checker)
   #
-  def self.probably_readerable?(html)
-    self.is_probably_readerable(html)
+  def self.probably_readerable?(html, min_content_length: 140, min_score: 20, visibility_checker: nil)
+    self.is_probably_readerable(html, min_content_length: min_content_length, min_score: min_score, visibility_checker: visibility_checker)
   end
 
   private

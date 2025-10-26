@@ -14,7 +14,9 @@ module ReadabilityJs
     #
     def self.parse(html, url: nil, debug: false, max_elems_to_parse: 0, nb_top_candidates: 5, char_threshold: 500, classes_to_preserve: [], keep_classes: false, disable_json_ld: false, serializer: nil, allow_video_regex: nil, link_density_modifier: 0)
       begin
-        self.new.parse html
+        # remove style tags from html, so jsdom does not need to process css and its warnings are not shown
+        html = html.gsub(/<style[^>]*>.*?<\/style>/m, '')
+        self.new.parse html, url, debug, max_elems_to_parse, nb_top_candidates, char_threshold, classes_to_preserve, keep_classes, disable_json_ld, serializer, allow_video_regex, link_density_modifier
       rescue ::Nodo::JavaScriptError => e
         raise ReadabilityJs::Error.new "#{e.message}"
       end
@@ -23,9 +25,11 @@ module ReadabilityJs
     #
     # instance wrapper method, as nodo does not support class methods
     #
-    def self.is_probably_readerable(html, min_content_length: 140, min_score: 20, visibility_checker: 'isNodeVisible')
+    def self.is_probably_readerable(html, min_content_length: 140, min_score: 20, visibility_checker: nil)
       begin
-        self.new.is_probably_readerable html
+        # remove style tags from html, so jsdom does not need to process css and its warnings are not shown
+        html = html.gsub(/<style[^>]*>.*?<\/style>/m, '')
+        self.new.is_probably_readerable html, min_content_length, min_score, visibility_checker
       rescue ::Nodo::JavaScriptError => e
         raise ReadabilityJs::Error.new "#{e.message}"
       end
@@ -60,11 +64,16 @@ module ReadabilityJs
     JS
 
     function :is_probably_readerable, <<~JS
-      async (html) => {
+      async (html, minContentLength, minScore, visibilityChecker) => {
         const doc = new jsdom.JSDOM(html);
         
         let readability_options = {};
-        return readability.Readability.isProbablyReaderable(doc);
+        if(minContentLength !== undefined && minContentLength !== null) readability_options.minContentLength = minContentLength;
+        if(minScore !== undefined && minScore !== null) readability_options.minScore = minScore;
+        if(visibilityChecker !== undefined && visibilityChecker !== null) {
+          readability_options.visibilityChecker = eval(visibilityChecker);
+        }
+        return readability.isProbablyReaderable(doc.window.document, readability_options);
       }
     JS
 
