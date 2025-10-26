@@ -69,7 +69,7 @@ and includes a beautified markdown version of the content.
 ```
 
 ### Query parameters
-You can pass all parameters supported by readability, checkout the [rubydoc for more details](https://www.rubydoc.info/gems/readability_js/ReadabilityJs).
+You can pass all parameters supported by readability, checkout the [rubydoc for more details](https://rubydoc.info/github/magynhard/ruby-readability_js/ReadabilityJs).
 
 Here an example with all parameters, the camelCase parameters are converted to snake_case in ruby:
 
@@ -105,7 +105,7 @@ It contains the data returned by readability, with hash keys transformed in snak
 <a name="documentation"></a>
 ## Documentation
 Check out the doc at RubyDoc:<br>
-https://www.rubydoc.info/gems/readability_js
+https://rubydoc.info/github/magynhard/ruby-readability_js
 
 
 As this library is only a wrapper, checkout the original readability documentation:<br>
