@@ -21,6 +21,7 @@ module ReadabilityJs
       # welt
       "nav[aria-label='Breadcrumb']",
       ".c-inline-teaser-list",
+      "[width='1'][height='1']",
       # golem
       ".go-alink-list",
       # faz
