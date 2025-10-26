@@ -20,6 +20,9 @@ module ReadabilityJs
       end
     end
 
+    #
+    # instance wrapper method, as nodo does not support class methods
+    #
     def self.is_probably_readerable(html, min_content_length: 140, min_score: 20, visibility_checker: 'isNodeVisible')
       begin
         self.new.is_probably_readerable html
@@ -59,6 +62,8 @@ module ReadabilityJs
     function :is_probably_readerable, <<~JS
       async (html) => {
         const doc = new jsdom.JSDOM(html);
+        
+        let readability_options = {};
         return readability.Readability.isProbablyReaderable(doc);
       }
     JS
