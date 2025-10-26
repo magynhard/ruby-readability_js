@@ -46,6 +46,8 @@ module ReadabilityJs
       "[x-data='{}']",
       "#komune",
       ".community",
+      # tagesschau
+      ".article-head__topline",
     ]
 
     def self.before_cleanup(html)
