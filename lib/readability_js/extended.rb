@@ -242,7 +242,6 @@ module ReadabilityJs
           if h1
             h1.add_next_sibling(Nokogiri::HTML::DocumentFragment.parse(img_tag))
             html = doc.to_html
-            text = result['image_url'] + "\n\n" + text
           end
         end
       end
