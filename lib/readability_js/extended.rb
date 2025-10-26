@@ -148,7 +148,7 @@ module ReadabilityJs
     # @return [String] The cleaned HTML content as a string.
     #
     def self.clean_up_comments(html)
-      copy = html.dup
+      copy = html.dup.to_s
       # Turn \x3C before comment start into '<'
       copy.gsub!(/\\x3C(?=!--)/, '<')
       # Decode encoded comment end --&gt; to -->
