@@ -148,7 +148,7 @@ module ReadabilityJs
     # @return [String] The cleaned HTML content as a string.
     #
     def self.clean_up_comments(html)
-      copy = html.dup.to_s
+      copy = html.dup || ""
       # Turn \x3C before comment start into '<'
       copy.gsub!(/\\x3C(?=!--)/, '<')
       # Decode encoded comment end --&gt; to -->
@@ -204,9 +204,9 @@ module ReadabilityJs
       end
       # Check for image and if none is found, add after title if available
       if result.key?("image_url") && !result["image_url"].to_s.strip.empty?
-        has_image = mark_down.match(/!\[.*?\]\(.*?\)/)
+        has_image = mark_down.match(/!\[.*?\]\(.*?\)/) || mark_down.match(/<img\b[^>]*>/) || mark_down.match(/<picture\b[^>]*>.*?<\/picture>/m)
         if !has_image
-          img_md = "![Lead Image](#{result['image_url']})\n\n"
+          img_md = "![image](#{result['image_url']})\n\n"
           mark_down = mark_down.sub(/^# .+?\n/, "\\0" + img_md)
         end
       end
@@ -237,7 +237,7 @@ module ReadabilityJs
         # check for img tags but also for picture tags
         has_image = !doc.css('img, picture').empty?
         if !has_image
-          img_tag = "<p><img src=\"#{result['image_url']}\" alt=\"Lead Image\"></p>\n"
+          img_tag = "<p><img src=\"#{result['image_url']}\"></p>\n"
           h1 = doc.at_css('h1')
           if h1
             h1.add_next_sibling(Nokogiri::HTML::DocumentFragment.parse(img_tag))
