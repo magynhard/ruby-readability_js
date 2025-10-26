@@ -1,8 +1,7 @@
-
 module ReadabilityJs
   class Extended
 
-    SELECTOR_BLACKLIST = [
+    DEFAULT_SELECTOR_BLACKLIST = [
       ".Article-Partner",
       ".Article-Partner-Text",
       ".Article-Comments-Button",
@@ -11,34 +10,26 @@ module ReadabilityJs
       "*[data-element-tracking-name]",
       "*[aria-label='Anzeige']",
       "nav[aria-label='breadcrumb']",
-      # heise
       "a-video",
       "a-gift",
       "a-collapse",
       "a-opt-in",
-      # spiegel
       "[data-area='related_articles']",
-      # welt
       "nav[aria-label='Breadcrumb']",
       ".c-inline-teaser-list",
       "[width='1'][height='1']",
-      # golem
       ".go-alink-list",
-      # faz
       "[data-external-selector='related-articles-entries']",
       ".BigBox",
-      # frankfurter rundschau
       ".id-Breadcrumb-item",
       ".id-Story-interactionBar",
       "revenue-reel",
       ".id-StoryElement-factBox",
-      # stern
       ".breadcrumb",
       ".teaser",
       ".group-teaserblock__items",
       ".title__kicker",
       "ws-adtag",
-      # taz
       "[data-for='webelement_bio']",
       "[data-for='webelement_citation']",
       "#articleTeaser",
@@ -46,12 +37,13 @@ module ReadabilityJs
       "[x-data='{}']",
       "#komune",
       ".community",
-      # tagesschau
       ".article-head__topline",
+      ".article__audioicon",
+      ".auplayer",
     ]
 
-    def self.before_cleanup(html)
-      pre_parser html
+    def self.before_cleanup(html, blacklist_selectors: [])
+      pre_parser html, blacklist_selectors: blacklist_selectors
     end
 
     def self.after_cleanup(result, html)
@@ -64,16 +56,18 @@ module ReadabilityJs
     #
     # Pre-parser to clean up HTML before passing it to Readability
     #
-    # SELECTOR_BLACKLIST contains CSS selectors of elements to be removed from the HTML
+    # DEFAULT_SELECTOR_BLACKLIST and given blacklist_selectors contains CSS selectors of elements to be removed from the HTML
     # before parsing to improve content extraction.
     #
     # @param html [String] The HTML document as a string.
     # @return [String] The cleaned HTML document as a string.
     #
-    def self.pre_parser(html)
+    def self.pre_parser(html, blacklist_selectors: [])
+      final_blacklist = DEFAULT_SELECTOR_BLACKLIST
+      final_blacklist += blacklist_selectors if blacklist_selectors.is_a?(Array) && !blacklist_selectors.empty?
       doc = Nokogiri::HTML(html)
       # Remove blacklisted elements by selector
-      SELECTOR_BLACKLIST.each do |classname|
+      final_blacklist.each do |classname|
         doc.css("#{classname}").remove
       end
       doc.to_html

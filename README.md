@@ -64,7 +64,9 @@ and includes a beautified markdown version of the content.
 ```ruby
     require 'readability_js'
     html = File.read("my_article.html")
-    result = ReadabilityJs.parse_extended(html)
+    # extend has included a DEFAULT_SELECTOR_BLACKLIST and you can add your own selectors to it as well, 
+    # that will be used to remove unwanted elements from the content before parsing at all.
+    result = ReadabilityJs.parse_extended(html, blacklist_selectors: [".advertisement", "#sponsored"])
     p result
 ```
 
@@ -81,7 +83,7 @@ data = ReadabilityJs.parse(
 # => Hash
 ```
 
-### Query response
+### Parse response
 The response object is of type `Hash`.
 It contains the data returned by readability, with hash keys transformed in snake_case.
 
