@@ -27,6 +27,7 @@ RSpec.describe ReadabilityJs, '#parse' do
         puts "excerpt: #{parsed['excerpt'][0..512]}"
         puts "site_name: #{parsed['site_name']}"
         puts "published_time: #{parsed['published_time']}"
+        puts "image_url: #{parsed['image_url']}"
         File.write("tmp/" + File.basename(source_file,".html") + ".md", parsed['markdown_content'])
         File.write("tmp/" + File.basename(source_file,".html") + ".html", parsed['content'])
         File.write("tmp/" + File.basename(source_file,".html") + ".txt", parsed['text_content'])

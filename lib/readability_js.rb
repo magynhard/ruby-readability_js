@@ -70,7 +70,7 @@ module ReadabilityJs
   def self.parse_extended(html, url: nil, debug: false, max_elems_to_parse: 0, nb_top_candidates: 5, char_threshold: 500, classes_to_preserve: [], keep_classes: false, disable_json_ld: false, serializer: nil, allow_video_regex: nil, link_density_modifier: 0)
     result = Extended::before_cleanup html
     result = parse result, url: url, debug: debug, max_elems_to_parse: max_elems_to_parse, nb_top_candidates: nb_top_candidates, char_threshold: char_threshold, classes_to_preserve: classes_to_preserve, keep_classes: keep_classes, disable_json_ld: disable_json_ld, serializer: serializer, allow_video_regex: allow_video_regex, link_density_modifier: link_density_modifier
-    Extended::after_cleanup result
+    Extended::after_cleanup result, html
   end
 
   #

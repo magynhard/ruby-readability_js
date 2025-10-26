@@ -97,7 +97,8 @@ It contains the data returned by readability, with hash keys transformed in snak
   "dir" => "ltr",
   "site_name" => "example.com",
   "lang" => "en",
-  "published_time" => "2024-01-01T12:00:00Z"
+  "published_time" => "2024-01-01T12:00:00Z",
+  "image_url" => "https://example.com/image.jpg" # only for extended parse
 }    
 ```
 

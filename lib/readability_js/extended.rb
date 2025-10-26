@@ -48,11 +48,12 @@ module ReadabilityJs
     ]
 
     def self.before_cleanup(html)
-      pre_parser(html)
+      pre_parser html
     end
 
-    def self.after_cleanup(result)
-      clean_up_result(result)
+    def self.after_cleanup(result, html)
+      find_and_add_picture result, html
+      clean_up_and_enrich_result result
     end
 
     private
@@ -76,6 +77,49 @@ module ReadabilityJs
     end
 
     #
+    # Post-parser to find and add lead image URL if missing.
+    #
+    # Will add a picture into the result hash under the key "image_url".
+    #
+    # Looks for Open Graph and Twitter Card meta tags to find a lead image URL.
+    # If not found, it will have a look into the markdown content for the first image.
+    #
+    # @param result [Hash] The result hash from Readability parsing.
+    # @param html [String] The original HTML document as a string.
+    # @return [Hash] The updated result hash.
+    #
+    def self.find_and_add_picture(result, html)
+      return result if result.key?("lead_image_url") && !result["lead_image_url"].to_s.strip.empty?
+      doc = Nokogiri::HTML(html)
+      # try to find og:image or twitter:image meta tags
+      meta_tags = doc.css('meta[property="og:image"], meta[name="og:image"], meta[name="twitter:image"]')
+      meta_tags.each do |meta_tag|
+        content = meta_tag['content']
+        if content && !content.strip.empty?
+          result["image_url"] = content.strip
+          break
+        end
+      end
+      # try to find first image in markdown content if no meta tag found before
+      if !result.key?("image_url") || result["image_url"].to_s.strip.empty?
+        if result.key?("markdown_content")
+          md_content = result["markdown_content"]
+          md_content.scan(/!\[.*?\]\((.*?)\)/).each do |match|
+            img_url = match[0]
+            if img_url && !img_url.strip.empty?
+              # check if img ends with common image file extensions
+              if img_url =~ /\.(jpg|jpeg|png|gif|webp|svg|tif|avif)(\?.*)?$/i
+                result["image_url"] = img_url.strip
+                break
+              end
+            end
+          end
+        end
+      end
+      result
+    end
+
+    #
     # Post-parser to clean up extracted content after Readability processing
     #
     # Cleans up comment artifacts and beautifies HTML and adds beautified Markdown content.
@@ -83,7 +127,7 @@ module ReadabilityJs
     # @param result [Hash] The result hash from Readability parsing.
     # @return [Hash] The cleaned result hash.
     #
-    def self.clean_up_result(result)
+    def self.clean_up_and_enrich_result(result)
       result["content"] = clean_up_comments(result["content"]) if result.key?("content")
       result["text_content"] = clean_up_comments(result["text_content"]) if result.key?("text_content")
       result["excerpt"] = clean_up_comments(result["excerpt"]) if result.key?("excerpt")
@@ -157,6 +201,14 @@ module ReadabilityJs
       if !mark_down.start_with?("# ") && result.key?("title") && !result["title"].to_s.strip.empty? && !mark_down.include?(result["title"])
         mark_down = "# #{result['title']}\n\n" + mark_down
       end
+      # Check for image and if none is found, add after title if available
+      if result.key?("image_url") && !result["image_url"].to_s.strip.empty?
+        has_image = mark_down.match(/!\[.*?\]\(.*?\)/)
+        if !has_image
+          img_md = "![Lead Image](#{result['image_url']})\n\n"
+          mark_down = mark_down.sub(/^# .+?\n/, "\\0" + img_md)
+        end
+      end
       # Add a space after markdown links if immediately followed by an alphanumeric char (missing separation).
       mark_down.gsub!(/(\[[^\]]+\]\((?:[^\)"']+|"[^"]*"|'[^']*')*\))(?=[A-Za-z0-9ÄÖÜäöüß])/, '\1 ')
       result["markdown_content"] = mark_down
@@ -178,8 +230,23 @@ module ReadabilityJs
         html = title_tag + html
         text = result['title'] + "\n\n" + text
       end
-      doc = Nokogiri::HTML(html)
+      # Check for image and if none is found, add after title if available
+      if result.key?("image_url") && !result["image_url"].to_s.strip.empty?
+        doc = Nokogiri::HTML(html)
+        # check for img tags but also for picture tags
+        has_image = !doc.css('img, picture').empty?
+        if !has_image
+          img_tag = "<p><img src=\"#{result['image_url']}\" alt=\"Lead Image\"></p>\n"
+          h1 = doc.at_css('h1')
+          if h1
+            h1.add_next_sibling(Nokogiri::HTML::DocumentFragment.parse(img_tag))
+            html = doc.to_html
+            text = result['image_url'] + "\n\n" + text
+          end
+        end
+      end
       # Add a space after a links if immediately followed by an alphanumeric char (missing separation).
+      doc = Nokogiri::HTML(html)
       doc.css('a').each do |link|
         next if link.next_sibling.nil?
         if link.next_sibling.text? && link.next_sibling.content =~ /\A[A-Za-z0-9ÄÖÜäöüß]/
